@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Quantities Counter</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#111;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:12px;-webkit-tap-highlight-color:transparent;}
+h1{font-size:1.15rem;text-align:center;margin-bottom:10px;color:#a78bfa;letter-spacing:.5px;}
+#job-name{width:100%;background:#1e1e1e;color:#fff;border:1px solid #444;border-radius:8px;padding:10px 12px;font-size:1rem;margin-bottom:12px;outline:none;}
+.grand-bar{background:#1a1a2e;border:2px solid #6c63ff;border-radius:10px;padding:10px 14px;text-align:center;margin-bottom:12px;font-size:1.1rem;font-weight:bold;color:#ccc;}
+#grand-total{color:#a78bfa;font-size:1.3rem;}
+.room-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center;}
+.room-bar button{padding:10px 16px;border-radius:20px;border:none;font-weight:bold;font-size:0.85rem;cursor:pointer;-webkit-appearance:none;touch-action:manipulation;}
+#newRoomBtn{background:#6c63ff;color:#fff;}
+#resetAllBtn{background:#e74c3c;color:#fff;}
+.colour-picker{display:none;gap:14px;flex-wrap:wrap;margin-bottom:12px;padding:12px;background:#1e1e1e;border-radius:10px;align-items:center;}
+.colour-picker.open{display:flex;}
+.colour-swatch{width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;touch-action:manipulation;-webkit-appearance:none;}
+.colour-swatch.active{border-color:#fff;}
+.item-row{display:flex;align-items:center;padding:9px 10px;border-radius:8px;margin-bottom:6px;background:#1e1e1e;gap:8px;border-left:4px solid transparent;}
+.item-label{flex:1;font-size:0.87rem;line-height:1.3;color:#ddd;}
+.add-input{width:58px;background:#2a2a2a;color:#fff;border:1px solid #555;border-radius:6px;padding:8px 4px;font-size:1rem;text-align:center;outline:none;-webkit-appearance:none;-moz-appearance:textfield;}
+.add-input:focus{border-color:#6c63ff;}
+.add-btn{background:#6c63ff;color:#fff;border:none;border-radius:6px;padding:9px 13px;font-size:0.9rem;font-weight:bold;cursor:pointer;-webkit-appearance:none;touch-action:manipulation;min-width:50px;user-select:none;-webkit-user-select:none;}
+.add-btn:active{background:#5a52d5;}
+.total-box{background:#2a2a2a;border:1px solid #444;border-radius:6px;padding:8px 6px;min-width:42px;text-align:center;font-weight:bold;font-size:0.95rem;color:#4ade80;}
+</style>
+</head>
+<body>
+
+<h1>📦 Quantities Counter</h1>
+<input type="text" id="job-name" placeholder="Job name..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" onchange="save()" />
+
+<div class="grand-bar">Grand Total: <span id="grand-total">0</span></div>
+
+<div class="room-bar">
+  <button id="newRoomBtn" onclick="openColourPicker()">🎨 New Room</button>
+  <button id="resetAllBtn" onclick="resetAll()">🗑 Reset All</button>
+</div>
+
+<div class="colour-picker" id="colourPicker">
+  <div class="colour-swatch" style="background:#e74c3c" onclick="selectRoom('#e74c3c',this)"></div>
+  <div class="colour-swatch" style="background:#e67e22" onclick="selectRoom('#e67e22',this)"></div>
+  <div class="colour-swatch" style="background:#f1c40f" onclick="selectRoom('#f1c40f',this)"></div>
+  <div class="colour-swatch" style="background:#2ecc71" onclick="selectRoom('#2ecc71',this)"></div>
+  <div class="colour-swatch" style="background:#1abc9c" onclick="selectRoom('#1abc9c',this)"></div>
+  <div class="colour-swatch" style="background:#3498db" onclick="selectRoom('#3498db',this)"></div>
+  <div class="colour-swatch" style="background:#9b59b6" onclick="selectRoom('#9b59b6',this)"></div>
+  <div class="colour-swatch" style="background:#e91e63" onclick="selectRoom('#e91e63',this)"></div>
+  <div class="colour-swatch" style="background:#00bcd4" onclick="selectRoom('#00bcd4',this)"></div>
+  <div class="colour-swatch" style="background:#ff9800" onclick="selectRoom('#ff9800',this)"></div>
+</div>
+
+<div id="items-list">
+
+<form class="item-row" id="r1" onsubmit="addQty(this,'r1','t1');return false">
+  <span class="item-label">Cantilever big</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t1">0</div>
+</form>
+
+<form class="item-row" id="r2" onsubmit="addQty(this,'r2','t2');return false">
+  <span class="item-label">Cantilever small</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t2">0</div>
+</form>
+
+<form class="item-row" id="r3" onsubmit="addQty(this,'r3','t3');return false">
+  <span class="item-label">3" trunking</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t3">0</div>
+</form>
+
+<form class="item-row" id="r4" onsubmit="addQty(this,'r4','t4');return false">
+  <span class="item-label">3" trunking bend</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t4">0</div>
+</form>
+
+<form class="item-row" id="r5" onsubmit="addQty(this,'r5','t5');return false">
+  <span class="item-label">3" suspension rod</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t5">0</div>
+</form>
+
+<form class="item-row" id="r6" onsubmit="addQty(this,'r6','t6');return false">
+  <span class="item-label">2" trunking</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t6">0</div>
+</form>
+
+<form class="item-row" id="r7" onsubmit="addQty(this,'r7','t7');return false">
+  <span class="item-label">2" trunking bend</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t7">0</div>
+</form>
+
+<form class="item-row" id="r8" onsubmit="addQty(this,'r8','t8');return false">
+  <span class="item-label">3" end cap</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t8">0</div>
+</form>
+
+<form class="item-row" id="r9" onsubmit="addQty(this,'r9','t9');return false">
+  <span class="item-label">2" end cap</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t9">0</div>
+</form>
+
+<form class="item-row" id="r10" onsubmit="addQty(this,'r10','t10');return false">
+  <span class="item-label">2" lighting trunking</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t10">0</div>
+</form>
+
+<form class="item-row" id="r11" onsubmit="addQty(this,'r11','t11');return false">
+  <span class="item-label">2" lighting trunking rod suspensions</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t11">0</div>
+</form>
+
+<form class="item-row" id="r12" onsubmit="addQty(this,'r12','t12');return false">
+  <span class="item-label">2" lighting trunking standoff</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t12">0</div>
+</form>
+
+<form class="item-row" id="r13" onsubmit="addQty(this,'r13','t13');return false">
+  <span class="item-label">All conduit bends</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t13">0</div>
+</form>
+
+<form class="item-row" id="r14" onsubmit="addQty(this,'r14','t14');return false">
+  <span class="item-label">Conduit lighting</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t14">0</div>
+</form>
+
+<form class="item-row" id="r15" onsubmit="addQty(this,'r15','t15');return false">
+  <span class="item-label">Conduit heating</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t15">0</div>
+</form>
+
+<form class="item-row" id="r16" onsubmit="addQty(this,'r16','t16');return false">
+  <span class="item-label">Conduit sockets</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t16">0</div>
+</form>
+
+<form class="item-row" id="r17" onsubmit="addQty(this,'r17','t17');return false">
+  <span class="item-label">External flood / emergency bulkhead conduit pass through</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t17">0</div>
+</form>
+
+<form class="item-row" id="r18" onsubmit="addQty(this,'r18','t18');return false">
+  <span class="item-label">Thorn 5ft</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t18">0</div>
+</form>
+
+<form class="item-row" id="r19" onsubmit="addQty(this,'r19','t19');return false">
+  <span class="item-label">Thorn 4ft</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t19">0</div>
+</form>
+
+<form class="item-row" id="r20" onsubmit="addQty(this,'r20','t20');return false">
+  <span class="item-label">LED panel</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t20">0</div>
+</form>
+
+<form class="item-row" id="r21" onsubmit="addQty(this,'r21','t21');return false">
+  <span class="item-label">Bulkhead</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t21">0</div>
+</form>
+
+<form class="item-row" id="r22" onsubmit="addQty(this,'r22','t22');return false">
+  <span class="item-label">Emergency bulkhead</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t22">0</div>
+</form>
+
+<form class="item-row" id="r23" onsubmit="addQty(this,'r23','t23');return false">
+  <span class="item-label">Maintained emergency bulkhead</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t23">0</div>
+</form>
+
+<form class="item-row" id="r24" onsubmit="addQty(this,'r24','t24');return false">
+  <span class="item-label">Flood light</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t24">0</div>
+</form>
+
+<form class="item-row" id="r25" onsubmit="addQty(this,'r25','t25');return false">
+  <span class="item-label">Single socket</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t25">0</div>
+</form>
+
+<form class="item-row" id="r26" onsubmit="addQty(this,'r26','t26');return false">
+  <span class="item-label">Double socket</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t26">0</div>
+</form>
+
+<form class="item-row" id="r27" onsubmit="addQty(this,'r27','t27');return false">
+  <span class="item-label">Fused spur</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t27">0</div>
+</form>
+
+<form class="item-row" id="r28" onsubmit="addQty(this,'r28','t28');return false">
+  <span class="item-label">Isolator / local switch</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t28">0</div>
+</form>
+
+<form class="item-row" id="r29" onsubmit="addQty(this,'r29','t29');return false">
+  <span class="item-label">Thermostat</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t29">0</div>
+</form>
+
+<form class="item-row" id="r30" onsubmit="addQty(this,'r30','t30');return false">
+  <span class="item-label">Dimplex 3kw</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t30">0</div>
+</form>
+
+<form class="item-row" id="r31" onsubmit="addQty(this,'r31','t31');return false">
+  <span class="item-label">Dimplex 2kw</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t31">0</div>
+</form>
+
+<form class="item-row" id="r32" onsubmit="addQty(this,'r32','t32');return false">
+  <span class="item-label">Dimplex 1.5kw</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t32">0</div>
+</form>
+
+<form class="item-row" id="r33" onsubmit="addQty(this,'r33','t33');return false">
+  <span class="item-label">Smoke detector</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t33">0</div>
+</form>
+
+<form class="item-row" id="r34" onsubmit="addQty(this,'r34','t34');return false">
+  <span class="item-label">Heat detector</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t34">0</div>
+</form>
+
+<form class="item-row" id="r35" onsubmit="addQty(this,'r35','t35');return false">
+  <span class="item-label">Bell / sounder</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t35">0</div>
+</form>
+
+<form class="item-row" id="r36" onsubmit="addQty(this,'r36','t36');return false">
+  <span class="item-label">Call point</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t36">0</div>
+</form>
+
+<form class="item-row" id="r37" onsubmit="addQty(this,'r37','t37');return false">
+  <span class="item-label">Fire panel</span>
+  <input type="number" class="add-input" placeholder="0" min="0" step="1" inputmode="numeric">
+  <button type="submit" class="add-btn">Add</button>
+  <div class="total-box" id="t37">0</div>
+</form>
+
+</div>
+
+<script>
+var totals = {};
+var rowColours = {};
+var currentRoom = null;
+var TOTAL_ROWS = 37;
+
+function save() {
+  try {
+    localStorage.setItem('qc_totals', JSON.stringify(totals));
+    localStorage.setItem('qc_colours', JSON.stringify(rowColours));
+    localStorage.setItem('qc_room', currentRoom || '');
+    localStorage.setItem('qc_job', document.getElementById('job-name').value);
+  } catch(e) {}
+}
+
+function load() {
+  try {
+    var t = localStorage.getItem('qc_totals');
+    if (t) totals = JSON.parse(t);
+    var c = localStorage.getItem('qc_colours');
+    if (c) rowColours = JSON.parse(c);
+    var r = localStorage.getItem('qc_room');
+    if (r) {
+      currentRoom = r;
+      document.getElementById('newRoomBtn').style.background = r;
+      var swatches = document.querySelectorAll('.colour-swatch');
+      for (var i = 0; i < swatches.length; i++) {
+        var sw = swatches[i];
+        if (sw.style.backgroundColor === hexToRgb(r) || sw.getAttribute('style').indexOf(r) !== -1) {
+          sw.classList.add('active');
+        }
+      }
+    }
+    var j = localStorage.getItem('qc_job');
+    if (j) document.getElementById('job-name').value = j;
+  } catch(e) {}
+  renderAll();
+}
+
+function hexToRgba(hex, a) {
+  var r = parseInt(hex.slice(1,3),16);
+  var g = parseInt(hex.slice(3,5),16);
+  var b = parseInt(hex.slice(5,7),16);
+  return 'rgba('+r+','+g+','+b+','+a+')';
+}
+
+function hexToRgb(hex) {
+  var r = parseInt(hex.slice(1,3),16);
+  var g = parseInt(hex.slice(3,5),16);
+  var b = parseInt(hex.slice(5,7),16);
+  return 'rgb('+r+', '+g+', '+b+')';
+}
+
+function renderAll() {
+  var sum = 0;
+  for (var n = 1; n <= TOTAL_ROWS; n++) {
+    var val = totals['r'+n] || 0;
+    sum += val;
+    var tEl = document.getElementById('t'+n);
+    if (tEl) tEl.textContent = val;
+    var row = document.getElementById('r'+n);
+    var col = rowColours['r'+n];
+    if (row && col) {
+      row.style.background = hexToRgba(col, 0.22);
+      row.style.borderLeftColor = col;
+    } else if (row) {
+      row.style.background = '#1e1e1e';
+      row.style.borderLeftColor = 'transparent';
+    }
+  }
+  document.getElementById('grand-total').textContent = sum;
+}
+
+function addQty(form, rowId, totalId) {
+  var input = form.querySelector('input[type="number"]');
+  var val = parseInt(input.value, 10);
+  input.value = '';
+  input.blur();
+  if (isNaN(val) || val <= 0) return false;
+  totals[rowId] = (totals[rowId] || 0) + val;
+  if (currentRoom) rowColours[rowId] = currentRoom;
+  renderAll();
+  save();
+  return false;
+}
+
+function openColourPicker() {
+  var p = document.getElementById('colourPicker');
+  p.classList.toggle('open');
+}
+
+function selectRoom(colour, el) {
+  currentRoom = colour;
+  var swatches = document.querySelectorAll('.colour-swatch');
+  for (var i = 0; i < swatches.length; i++) swatches[i].classList.remove('active');
+  el.classList.add('active');
+  document.getElementById('colourPicker').classList.remove('open');
+  document.getElementById('newRoomBtn').style.background = colour;
+  save();
+}
+
+function resetAll() {
+  if (!confirm('Reset everything?')) return;
+  totals = {};
+  rowColours = {};
+  currentRoom = null;
+  document.getElementById('job-name').value = '';
+  document.getElementById('newRoomBtn').style.background = '#6c63ff';
+  var swatches = document.querySelectorAll('.colour-swatch');
+  for (var i = 0; i < swatches.length; i++) swatches[i].classList.remove('active');
+  renderAll();
+  save();
+}
+
+window.onload = load;
+</script>
+</body>
+</html>
